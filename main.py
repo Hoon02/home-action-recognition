@@ -73,7 +73,7 @@ def get_parser():
     parser.add_argument(
         '--num-worker',
         type=int,
-        default=128,
+        default=1,
         help='the number of worker for data loader')
     parser.add_argument(
         '--train-feeder-args',
@@ -121,9 +121,9 @@ def get_parser():
     parser.add_argument(
         '--nesterov', type=str2bool, default=False, help='use nesterov or not')
     parser.add_argument(
-        '--batch-size', type=int, default=256, help='training batch size')
+        '--batch-size', type=int, default=32, help='training batch size')
     parser.add_argument(
-        '--test-batch-size', type=int, default=256, help='test batch size')
+        '--test-batch-size', type=int, default=32, help='test batch size')
     parser.add_argument(
         '--start-epoch',
         type=int,
@@ -150,7 +150,7 @@ def get_parser():
 
 
 class Processor():
-    """ 
+    """
         Processor for Skeleton-based Action Recgnition
     """
 
@@ -306,16 +306,16 @@ class Processor():
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
-            loss_value.append(loss.data[0])
+            loss_value.append(loss.item())
             timer['model'] += self.split_time()
 
             # statistics
             self.arg.global_step += 1
-            self._summary_writer.add_scalar('iter_loss/train', loss.data[0], global_step=self.arg.global_step)
+            self._summary_writer.add_scalar('iter_loss/train', loss.item(), global_step=self.arg.global_step)
             if batch_idx % self.arg.log_interval == 0:
                 self.print_log(
                     '\tBatch({}/{}) done. Loss: {:.4f}  lr:{:.6f}'.format(
-                        batch_idx, len(loader), loss.data[0], lr))
+                        batch_idx, len(loader), loss.item(), lr))
             timer['statistics'] += self.split_time()
 
         # statistics of time consumption and loss
@@ -360,7 +360,7 @@ class Processor():
                 output = self.model(data)
                 loss = self.loss(output, label)
                 score_frag.append(output.data.cpu().numpy())
-                loss_value.append(loss.data[0])
+                loss_value.append(loss.item())
             score = np.concatenate(score_frag)
             score_dict = dict(
                 zip(self.data_loader[ln].dataset.sample_name, score))
@@ -436,7 +436,7 @@ if __name__ == '__main__':
     p = parser.parse_args()
     if p.config is not None:
         with open(p.config, 'r') as f:
-            default_arg = yaml.load(f)
+            default_arg = yaml.full_load(f)
         key = vars(p).keys()
         for k in default_arg.keys():
             if k not in key:

@@ -6,9 +6,9 @@ feeder: st_gcn.feeder.Feeder_kinetics
 train_feeder_args:
   data_path: ./data/Kinetics/kinetics-skeleton/kinetics_train
   label_path : ./data/Kinetics/kinetics-skeleton/kinetics_train_label.json
-  random_choose: True
-  random_move: True
-  window_size: 150 
+  random_choose: False
+  random_move: False
+  window_size: 150
 test_feeder_args:
   data_path: ./data/Kinetics/kinetics-skeleton/kinetics_val
   label_path : ./data/Kinetics/kinetics-skeleton/kinetics_val_label.json
@@ -16,10 +16,10 @@ test_feeder_args:
 # model
 model: st_gcn.net.ST_GCN
 model_args:
-  num_class: 400
+  num_class: 6
   channel: 3
   window_size: 150
-  num_person: 2
+  num_person: 1
   num_point: 18
   dropout: 0
   graph: st_gcn.graph.Kinetics
@@ -29,17 +29,15 @@ model_args:
   use_data_bn: True
 
 #optim
-weight_decay: 0.0001
-base_lr: 0.1
-step: [20, 30, 40, 50]
+weight_decay: 0.0005
+base_lr: 0.01
+step: [300]
+#step: [20, 30, 40, 50]
 
 # training
-device: [0,1,2,3]
-batch_size: 256
-test_batch_size: 256
-num_epoch: 60 
+device: 0
+batch_size: 32
+test_batch_size: 32
+num_epoch: 300
 nesterov: True
 save_interval: 10
-
-
-

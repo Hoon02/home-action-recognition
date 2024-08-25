@@ -44,8 +44,8 @@ class Feeder_kinetics(torch.utils.data.Dataset):
                  random_move=False,
                  window_size=-1,
                  pose_matching=False,
-                 num_person_in=5,
-                 num_person_out=2,
+                 num_person_in=1,
+                 num_person_out=1,
                  debug=False):
         self.debug = debug
         self.data_path = data_path
@@ -89,7 +89,7 @@ class Feeder_kinetics(torch.utils.data.Dataset):
         # output data shape (N, C, T, V, M)
         self.N = len(self.sample_name)  #sample
         self.C = 3  #channel
-        self.T = 300  #frame
+        self.T = 150  #frame
         self.V = 18  #joint
         self.M = self.num_person_out  #person
 
@@ -165,10 +165,10 @@ def test(data_path, label_path, vid=None, graph=None):
     import matplotlib.pyplot as plt
     loader = torch.utils.data.DataLoader(
         dataset=Feeder_kinetics(
-            data_path, label_path, pose_matching=False, num_person=10),
-        batch_size=64,
+            data_path, label_path, pose_matching=False, num_person=1),
+        batch_size=32,
         shuffle=False,
-        num_workers=2)
+        num_workers=1)
 
     if vid is None:
         index = 0
